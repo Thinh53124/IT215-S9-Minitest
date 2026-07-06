@@ -18,6 +18,17 @@ class NewFlight(BaseModel):
 async def get_flights(request: Request, status: str | None = None):
     if status:
         data = [flight for flight in flights_db if flight["status"] == status]
+        if not data:
+            raise HTTPException(
+                status_code=404,
+                detail={
+                    "statusCode": 404,
+                    "message": f"Không tìm thấy chuyến bay có status: {status}!",
+                    "data": None,
+                    "error": "ERR-AIR-03: Flight status not found.",
+                    "path": request.url.path
+                }
+            )
         message = f"Lấy danh sách chuyến bay có status: {status} thành công!"
     else:
         data = flights_db
